@@ -34,7 +34,7 @@ export async function GET(req, { params }) {
 }
 export async function PATCH(req, { params }) {
     const { id } = await params;
-    const data = await req.json(); //assume that it contain part of data...
+    const data = await req.json();
     const partialUpdate = {};
     console.log("data : ", data);
     if (data.name != null) partialUpdate.itemName = data.name;
@@ -69,7 +69,7 @@ export async function PATCH(req, { params }) {
 }
 export async function PUT(req, { params }) {
     const { id } = await params;
-    const data = await req.json(); //assume that it contain whole item data...
+    const data = await req.json();
     try {
         const client = await getClientPromise();
         const db = client.db("wad-01");
@@ -81,6 +81,33 @@ export async function PUT(req, { params }) {
             status: 200,
             headers: corsHeaders
         })
+    }
+    catch (exception) {
+        console.log("exception", exception.toString());
+        const errorMsg = exception.toString();
+        return NextResponse.json({
+            message: errorMsg
+        }, {
+            status: 400,
+            headers: corsHeaders
+        })
+    }
+}
+
+export async function DELETE(req, { params }) {
+    const { id } = await params;
+    try {
+        const client = await getClientPromise();
+        const db = client.db("wad-01");
+        const result = await db.collection("item").deleteOne({
+            _id: new ObjectId(id)
+        });
+        return NextResponse.json({
+            deletedCount: result.deletedCount
+        }, {
+            status: 200,
+            headers: corsHeaders
+        });
     }
     catch (exception) {
         console.log("exception", exception.toString());

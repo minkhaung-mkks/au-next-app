@@ -9,13 +9,33 @@ export async function OPTIONS(req) {
         headers: corsHeaders,
     });
 }
-export async function GET() {
+export async function GET(req) {
     try {
+        const { searchParams } = new URL(req.url);
+        const page = parseInt(searchParams.get('page')) || 1;
+        const limit = parseInt(searchParams.get('limit')) || 10;
+        const skip = (page - 1) * limit;
+
         const client = await getClientPromise();
         const db = client.db("wad-01");
-        const result = await db.collection("item").find({}).toArray();
+
+        const total = await db.collection("item").countDocuments({});
+        const result = await db.collection("item")
+            .find({})
+            .skip(skip)
+            .limit(limit)
+            .toArray();
+
         console.log("==> result", result);
-        return NextResponse.json(result, {
+        return NextResponse.json({
+            items: result,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit)
+            }
+        }, {
             headers: corsHeaders
         });
     }

@@ -1,6 +1,5 @@
-import corsHeaders from "@/lib/cors"; 
-import { NextResponse } from "next/server"; 
-// Handle preflight OPTIONS requests
+import corsHeaders from "@/lib/cors";
+import { NextResponse } from "next/server";
 export async function OPTIONS(req) { 
  return new Response(null, { 
  status: 200, 
