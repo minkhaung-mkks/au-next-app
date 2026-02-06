@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function OPTIONS(req) {
     return new Response(null, {
         status: 200,
-        headers: corsHeaders,
+        headers: corsHeaders(req),
     });
 }
 export async function GET(req) {
@@ -36,7 +36,7 @@ export async function GET(req) {
                 totalPages: Math.ceil(total / limit)
             }
         }, {
-            headers: corsHeaders
+            headers: corsHeaders(req)
         });
     }
     catch (exception) {
@@ -46,7 +46,7 @@ export async function GET(req) {
             message: errorMsg
         }, {
             status: 400,
-            headers: corsHeaders
+            headers: corsHeaders(req)
         })
     }
 }
@@ -68,7 +68,7 @@ export async function POST(req) {
             id: result.insertedId
         }, {
             status: 200,
-            headers: corsHeaders
+            headers: corsHeaders(req)
         })
     }
     catch (exception) {
@@ -78,7 +78,7 @@ export async function POST(req) {
             message: errorMsg
         }, {
             status: 400,
-            headers: corsHeaders
+            headers: corsHeaders(req)
         })
     }
 } 

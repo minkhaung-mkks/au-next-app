@@ -3,6 +3,7 @@ import { getClientPromise } from "@/lib/mongodb";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+import bcrypt from "bcrypt";
 export async function OPTIONS(req) {
     return new Response(null, {
         status: 200,
@@ -37,18 +38,21 @@ export async function PATCH(req, { params }) {
     const data = await req.json();
     const partialUpdate = {};
     console.log("data : ", data);
-    if (data.name != null) partialUpdate.itemName = data.name;
-    if (data.category != null) partialUpdate.itemCategory = data.category;
-    if (data.price != null) partialUpdate.itemPrice = data.price;
+    if (data.username != null) partialUpdate.username = data.username;
+    if (data.email != null) partialUpdate.email = data.email;
+    if (data.password != null) partialUpdate.password = await bcrypt.hash(data.password, 10);
+    if (data.firstname != null) partialUpdate.firstname = data.firstname;
+    if (data.lastname != null) partialUpdate.lastname = data.lastname;
+    if (data.status != null) partialUpdate.status = data.status;
     try {
         const client = await getClientPromise();
         const db = client.db("wad-01");
-        const existedData = await db.collection("item").findOne({
+        const existedData = await db.collection("user").findOne({
             _id: new
                 ObjectId(id)
         });
         const updateData = { ...existedData, ...partialUpdate };
-        const updatedResult = await db.collection("item").updateOne({
+        const updatedResult = await db.collection("user").updateOne({
             _id: new
                 ObjectId(id)
         }, { $set: updateData });
